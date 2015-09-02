@@ -6,10 +6,11 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Large Text"
-        android:padding="10dp"
-        android:id="@+id/tvDescription" />
+        android:padding="2.5dp"
+        android:id="@+id/tvDescription"
+        android:textColor="#6D4939"/>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -20,22 +21,24 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="07:00 AM to 09:00 AM"
-            android:layout_weight="8"
-            android:id="@+id/tvTimeRange"
-            android:padding="10dp"/>
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="12 Jan 2015"
+            android:textAlignment="textEnd"
+            android:layout_gravity="end"
+            android:textColor="#EFCDA7"
+            android:layout_weight="9"
+            android:id="@+id/tvDate"
+            android:padding="3dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="12 Jan 2015"
-            android:textAlignment="textEnd"
-            android:layout_gravity="end"
-            android:layout_weight="2"
-            android:id="@+id/tvDate"
-            android:padding="10dp"/>
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="07:00 AM to 09:00 AM"
+            android:layout_weight="1"
+            android:textColor="#EFCDA7"
+            android:id="@+id/tvTimeRange"
+            android:padding="3dp"/>
 
     </LinearLayout>
 </LinearLayout>

@@ -2,10 +2,10 @@ package com.raviteja.silencer;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
@@ -19,12 +19,15 @@ public class EventListAdapter extends CursorAdapter
 
     Context context;
     ArrayList<SilenceEvent> events;
+    private Typeface typeface_medium,typeface_bold;
 
     public EventListAdapter(Context ctx,Cursor cursor)
     {
         super(ctx,cursor,true);
         context = ctx;
         this.events = new ArrayList<SilenceEvent>();
+        typeface_medium = Typeface.createFromAsset(ctx.getAssets(), "fonts/KlinicSlabMedium.otf");
+        typeface_bold = Typeface.createFromAsset(ctx.getAssets(), "fonts/KlinicSlabBold.otf");
     }
 
     @Override
@@ -49,7 +52,11 @@ public class EventListAdapter extends CursorAdapter
         this.events.add(event);
 
         tvDes.setText(event.getDescription());
-        tvDate.setText(event.getDate());
-        tvTime.setText(event.getFromTime() + " to "+event.getToTime());
+        tvDate.setText(event.getDateString());
+        tvTime.setText(event.getFullTimeString());
+
+        tvDes.setTypeface(typeface_bold);
+        tvDate.setTypeface(typeface_medium);
+        tvTime.setTypeface(typeface_medium);
     }
 }

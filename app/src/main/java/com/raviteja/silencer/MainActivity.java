@@ -1,6 +1,9 @@
 package com.raviteja.silencer;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,6 +25,7 @@ public class MainActivity extends ActionBarActivity {
         adapter = new EventListAdapter(this,db.getAllEvents());
         silenceList.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+        this.getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#6D4939")));
     }
 
     @Override

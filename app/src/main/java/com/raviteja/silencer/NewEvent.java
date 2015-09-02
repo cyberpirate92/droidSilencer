@@ -105,6 +105,7 @@ public class NewEvent extends ActionBarActivity {
                     target.setText(hourOfDay+":"+minute);
                 }
             },hour,min,false);
+            timePicker.setTitle(target.equals(etFromTime) ? "Start time" : "End time");
             timePicker.show();
         }
         catch(Exception e)
