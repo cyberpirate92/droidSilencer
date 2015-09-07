@@ -1,38 +1,24 @@
 package com.raviteja.silencer;
 
+import java.util.Calendar;
+
 /**
  * Created by CYBERZEUS on 02-09-2015.
  */
 public class SilenceEvent {
 
-    private String date;
-    private String fromTime;
-    private String toTime;
+    private Calendar silenceFrom,silenceTo;
     private String description;
 
-    public String getDate() {
-        return date;
+    public int getUniqueID() {
+        return uniqueID;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setUniqueID(int uniqueID) {
+        this.uniqueID = uniqueID;
     }
 
-    public String getFromTime() {
-        return fromTime;
-    }
-
-    public void setFromTime(String fromTime) {
-        this.fromTime = fromTime;
-    }
-
-    public String getToTime() {
-        return toTime;
-    }
-
-    public void setToTime(String toTime) {
-        this.toTime = toTime;
-    }
+    private int uniqueID;
 
     public String getDescription() {
         return description;
@@ -42,42 +28,70 @@ public class SilenceEvent {
         this.description = description;
     }
 
+    public Calendar getSilenceTo() {
+        return silenceTo;
+    }
+
+    public void setSilenceTo(Calendar silenceTo) {
+        this.silenceTo = silenceTo;
+    }
+
+    public Calendar getSilenceFrom() {
+        return silenceFrom;
+    }
+
+    public void setSilenceFrom(Calendar silenceFrom) {
+        this.silenceFrom = silenceFrom;
+    }
+
     public String getDateString()
     {
-        String[] parts = this.date.split("-");
-        if(parts.length != 3){
-            return this.date;
+        if(silenceFrom.get(Calendar.DAY_OF_MONTH) == silenceTo.get(Calendar.DAY_OF_MONTH) && silenceFrom.get(Calendar.MONTH) == silenceTo.get(Calendar.MONTH) && silenceFrom.get(Calendar.YEAR) == silenceTo.get(Calendar.YEAR))
+        {
+            int day,month,year;
+            day = silenceFrom.get(Calendar.DAY_OF_MONTH);
+            month = silenceFrom.get(Calendar.MONTH);
+            year = silenceFrom.get(Calendar.YEAR);
+            return day + " " + getMonth(month) + " " + year;
         }
-
-        int year = Integer.parseInt(parts[0]);
-        int month = Integer.parseInt(parts[1]);
-        int day = Integer.parseInt(parts[2]);
-
-        String monthNames[] = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-        return day+" "+monthNames[month]+" "+year;
+        else if(silenceFrom.get(Calendar.MONTH) == silenceTo.get(Calendar.MONTH) && silenceFrom.get(Calendar.YEAR) == silenceTo.get(Calendar.YEAR))
+        {
+            int day1,day2,month,year;
+            day1 = silenceFrom.get(Calendar.DAY_OF_MONTH);
+            day2 = silenceTo.get(Calendar.DAY_OF_MONTH);
+            month = silenceFrom.get(Calendar.MONTH);
+            year = silenceFrom.get(Calendar.YEAR);
+            return day1 + " - " + day2 + " " + getMonth(month) + " " + year;
+        }
+        else
+        {
+           return "ERR";
+        }
     }
 
-    public String getFullTimeString() {
-        return getTimeString(this.fromTime) + " - "+getTimeString(this.toTime);
-    }
-
-    private String getTimeString(String time)
+    public String getTimeString()
     {
-        String parts[] = time.split(":");
-        int h,m;
-        if(parts.length != 2){
-            return time;
-        }
-        h = Integer.parseInt(parts[0]);
-        m = Integer.parseInt(parts[1]);
-        return format(h) + ":" + format(m);
+        int h1,h2,m1,m2;
+        h1 = silenceFrom.get(Calendar.HOUR_OF_DAY);
+        h2 = silenceTo.get(Calendar.HOUR_OF_DAY);
+        m1 = silenceFrom.get(Calendar.MINUTE);
+        m2 = silenceTo.get(Calendar.MINUTE);
+        return format(h1) + " : "+format(m1) + " - " + format(h2) + " : "+ format(m2);
     }
 
-    private String format(int n) // returns a 0-padded string representation of a number
+    public static String format(int n) // returns a 0-padded string representation of a number
     {
         if(n >= 0 && n <= 9)
             return "0"+n;
         else
             return ""+n;
+    }
+    public static String getMonth(int month)
+    {
+        String month_names[] = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+        if(month < month_names.length)
+            return month_names[month];
+        else
+            return month + "";
     }
 }
