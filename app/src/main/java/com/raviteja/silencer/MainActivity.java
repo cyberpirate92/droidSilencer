@@ -21,13 +21,12 @@ public class MainActivity extends ActionBarActivity {
 
     private ListView silenceList;
     private EventListAdapter adapter;
-    private MasterDB db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        db = new MasterDB(this);
+        final MasterDB db = new MasterDB(this);
         silenceList = (ListView)findViewById(R.id.listView);
         adapter = new EventListAdapter(this,db.getAllEvents());
         silenceList.setAdapter(adapter);

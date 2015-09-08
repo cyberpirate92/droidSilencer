@@ -20,21 +20,31 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         this.context = context;
+
         String msg = "It's time";
         if(intent.hasExtra("description"))
         {
             msg = intent.getStringExtra("description");
         }
-        Toast.makeText(context,msg,Toast.LENGTH_LONG).show();
-        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-        vibrator.vibrate(500);
-        if(intent.hasExtra("startTime") && intent.hasExtra("endTime"))
-        {
-            displayNotification(intent.getStringExtra("startTime"),intent.getStringExtra("endTime"));
+        if(intent.hasExtra("id")) {
+            long ID = intent.getLongExtra("id", -1);
+            if(ID == -1){
+                Log.d("Silencer-Broadcast","ERROR: ID is -1, no id received in intent, cancelling this intent");
+                return;
+            }
+            MasterDB db = new MasterDB(context);
+            if(db.idExists(ID)) {
+                Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+                NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                vibrator.vibrate(500);
+                if (intent.hasExtra("startTime") && intent.hasExtra("endTime")) {
+                    displayNotification(intent.getStringExtra("startTime"), intent.getStringExtra("endTime"));
+                }
+                silencePhone();
+            }
+            db.close();
         }
-        silencePhone();
-
     }
     private void silencePhone()
     {
