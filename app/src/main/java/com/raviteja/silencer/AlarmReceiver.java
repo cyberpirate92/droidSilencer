@@ -43,6 +43,9 @@ public class AlarmReceiver extends BroadcastReceiver {
                 }
                 silencePhone();
             }
+            else {
+                Log.d("Silencer-Broadcast","Alarm with Title '"+msg+"' has been canceled the inefficient way :( :( ");
+            }
             db.close();
         }
     }
@@ -82,5 +85,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         Notification notification = builder.getNotification();
         manager.notify(12,notification);
+        //manager.notify(12,builder.build());
     }
 }

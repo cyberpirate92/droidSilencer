@@ -19,7 +19,7 @@ import android.util.Log;
 public class MasterDB
 {
     static String db_name = "silencer.db";
-    static String table_name = "silent_events";
+    static String table_name = "silence_events";
     static String COL_ID = "_id";
     static String COL_FROM = "_from_";
     static String COL_TO = "_to_";
@@ -95,7 +95,7 @@ public class MasterDB
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context,startID,startIntent,0);
         // setting the start Alarm
         alarmManager.set(AlarmManager.RTC_WAKEUP,fromTime.getTimeInMillis(),pendingIntent);
-        alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);  // required ??
         // setting the end Alarm.
         pendingIntent = PendingIntent.getBroadcast(context,endID,endIntent,0);
         alarmManager.set(AlarmManager.RTC_WAKEUP,toTime.getTimeInMillis(),pendingIntent);
@@ -132,6 +132,7 @@ public class MasterDB
             int alarmID = random.nextInt(10000) + 10000;
             cursor = database.rawQuery("SELECT "+COL_ALARM_ID+" FROM "+table_name+" WHERE "+COL_ALARM_ID+" = "+alarmID,null);
             if(cursor.getCount() == 0) {
+                Log.d("Silencer-MasterDB","Generated Unique Random :"+alarmID);
                 return alarmID;
             }
         }
@@ -162,21 +163,39 @@ public class MasterDB
 
                 // canceling the starting alarm
                 Intent startIntent = new Intent(context.getApplicationContext(),AlarmReceiver.class);
-                PendingIntent pendingIntent = PendingIntent.getActivity(context,startID,startIntent,PendingIntent.FLAG_UPDATE_CURRENT);
-                pendingIntent.cancel();
-                alarmManager.cancel(pendingIntent);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(),startID,startIntent,PendingIntent.FLAG_NO_CREATE);
+                if(pendingIntent!=null) {
+                    pendingIntent.cancel();
+                    alarmManager.cancel(pendingIntent);
+                }
+                else {
+                    Log.d("Silencer-Broadcast","Strange: Pending Intent [startIntent] has already been cancelled.");
+                }
+                if(pendingIntent != null ) {
+                    Log.d("Silencer-Broadcast","Canceling Pending Intent (startIntent) has failed, pending intent not null.");
+                }
 
                 // canceling the ending alarm
-                Intent endIntent = new Intent(context,AlarmReceiver.class);
-                pendingIntent = PendingIntent.getActivity(context.getApplicationContext(),endID,endIntent,PendingIntent.FLAG_UPDATE_CURRENT);
-                pendingIntent.cancel();
-                alarmManager.cancel(pendingIntent);
+                Intent endIntent = new Intent(context.getApplicationContext(),AlarmReceiver.class);
+                pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), endID, endIntent,PendingIntent.FLAG_NO_CREATE);
+                if(pendingIntent != null) {
+                    pendingIntent.cancel();
+                    alarmManager.cancel(pendingIntent);
+                }
+                else {
+                    Log.d("Silencer-Broadcast","Strange: Pending Intent [endIntent] has already been cancelled.");
+                }
+                if(pendingIntent != null ) {
+                    Log.d("Silencer-Broadcast","Canceling Pending Intent (endIntent) has failed, pending intent not null.");
+                }
                 return true;
             }
             else {
+                Log.d("Silencer-MasterDB","ERROR: DELETE row failed | Row ID : "+id);
                 return false;
             }
         }
+        Log.d("Silencer-MasterDB","ERROR: No row exists with ID:"+id+" | Cannot DELETE");
         return false;
     }
 
