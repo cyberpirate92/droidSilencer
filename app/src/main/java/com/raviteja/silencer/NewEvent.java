@@ -203,6 +203,7 @@ public class NewEvent extends ActionBarActivity {
         }
         else {
             // TODO: Code for updating an already existing event.
+
         }
     }
 

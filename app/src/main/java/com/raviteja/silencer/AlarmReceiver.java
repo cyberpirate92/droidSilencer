@@ -12,10 +12,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 /**
- * Created by CYBERZEUS on 06-09-2015.
+ * Created by raviteja on 06-09-2015.
  */
 public class AlarmReceiver extends BroadcastReceiver {
     Context context;
+    SilenceEvent event;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -34,13 +35,14 @@ public class AlarmReceiver extends BroadcastReceiver {
             }
             MasterDB db = new MasterDB(context);
             if(db.idExists(ID)) {
+                this.event = db.getSilenceEventById(ID);
+                db.close(); // for efficiency
+                msg = this.event.getDescription();
                 Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
                 NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
                 Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(500);
-                if (intent.hasExtra("startTime") && intent.hasExtra("endTime")) {
-                    displayNotification(intent.getStringExtra("startTime"), intent.getStringExtra("endTime"));
-                }
+                vibrator.vibrate(250);
+                displayNotification(this.event.getDateString(),this.event.getTimeString());
                 silencePhone();
             }
             else {
@@ -51,6 +53,19 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
     private void silencePhone()
     {
+        /** TODO: this method is currently in toggle mode, have to change it
+             if(currentTime falls between startTime and endTime of event) {
+              if(phone is NOT in SILENT_MODE){
+                    set phone to silent.
+                }
+            }
+            else{
+                if(phone is in SILENT_MODE ){
+                    set phone to normal mode.
+                }
+            }
+        **/
+
         AudioManager manager = (AudioManager) this.context.getSystemService(Context.AUDIO_SERVICE);
         if(manager.getRingerMode() == AudioManager.RINGER_MODE_SILENT) {
             manager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
@@ -75,12 +90,12 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     }
 
-    private void displayNotification(String from,String to)
+    private void displayNotification(String dateString,String timeString)
     {
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Notification.Builder builder = new Notification.Builder(context);
         builder.setContentTitle("Silencer");
-        builder.setContentText("Silencer has silenced your phone until "+to);
+        builder.setContentText("Date : "+dateString+" \nTime : "+timeString);
         builder.setAutoCancel(false);
 
         Notification notification = builder.getNotification();

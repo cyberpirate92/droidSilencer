@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
- * Created by CYBERZEUS on 02-09-2015.
+ * Created by raviteja on 02-09-2015.
  */
 public class EventListAdapter extends CursorAdapter
 {
