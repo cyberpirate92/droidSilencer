@@ -10,6 +10,16 @@ public class SilenceEvent {
     private Calendar silenceFrom,silenceTo;
     private String description;
 
+    public SilenceEvent() {
+
+    }
+
+    public SilenceEvent(Calendar f,Calendar t,String d) {
+        this.silenceFrom = f;
+        this.silenceTo = t;
+        this.description = d;
+    }
+
     public int getUniqueID() {
         return uniqueID;
     }

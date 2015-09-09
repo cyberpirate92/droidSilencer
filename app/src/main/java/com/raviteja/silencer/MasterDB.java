@@ -138,8 +138,7 @@ public class MasterDB
         }
     }
 
-    public boolean idExists(long id)
-    {
+    public boolean idExists(long id) {
         Cursor cursor = database.rawQuery("SELECT "+COL_ALARM_ID+" FROM "+table_name+" WHERE "+COL_ID+" = "+id,null);
         if(cursor.getCount() > 0){
             cursor.close();
@@ -149,7 +148,24 @@ public class MasterDB
         return false;
     }
 
+    public Cursor getCursorById(long ID) {
+        return database.rawQuery("SELECT * FROM "+table_name+" WHERE "+COL_ID+" = "+ID,null);
+    }
 
+    public SilenceEvent getSilenceEventById(long ID) {
+        Cursor cursor = this.getCursorById(ID);
+        if(cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            Calendar from = Calendar.getInstance(),to = Calendar.getInstance();
+            String description = cursor.getString(cursor.getColumnIndex(this.COL_DESCRIPTION));
+            from.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(this.COL_FROM)));
+            to.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(this.COL_TO)));
+            return new SilenceEvent(from,to,description);
+        }
+        else {
+            return null;
+        }
+    }
 
     public boolean delete(int id) {
         String sql = "SELECT "+COL_ALARM_ID+" FROM "+table_name+" WHERE "+COL_ID+" = "+id;

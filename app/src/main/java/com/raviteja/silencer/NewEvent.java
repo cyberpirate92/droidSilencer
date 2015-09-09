@@ -3,6 +3,7 @@ package com.raviteja.silencer;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -75,6 +76,23 @@ public class NewEvent extends ActionBarActivity {
         for(TextView tv : repeatDays){
             setBoldFont(tv);
         }
+
+        if(this.getIntent().hasExtra("ID")) {
+            final long ID = getIntent().getLongExtra("d",-1);
+            if(ID != -1) {
+                setFields(ID);
+            }
+        }
+    }
+
+    public void setFields(long ID)
+    {
+        SilenceEvent event = (new MasterDB(NewEvent.this)).getSilenceEventById(ID);
+        Calendar from = event.getSilenceFrom();
+        Calendar to = event.getSilenceTo();
+        String description = event.getDescription();
+
+        // TODO:set the fields here, for opening activity via intent
     }
 
     public void setMediumFont(View view)

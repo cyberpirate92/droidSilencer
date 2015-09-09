@@ -62,6 +62,15 @@ public class MainActivity extends ActionBarActivity {
             }
         });
     }
+    @Override
+    public void onPause() {
+
+    }
+
+    @Override
+    public void onResume() {
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
