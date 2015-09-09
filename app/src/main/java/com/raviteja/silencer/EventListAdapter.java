@@ -40,8 +40,7 @@ public class EventListAdapter extends CursorAdapter
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View newView = inflater.inflate(R.layout.event_list_item,parent,false); // returns a new view
-        return newView;
+        return inflater.inflate(R.layout.event_list_item,parent,false); // returns a new view
     }
 
     @Override
@@ -74,7 +73,7 @@ public class EventListAdapter extends CursorAdapter
         tvTime.setTypeface(typeface_medium);
     }
 
-    public int getId(int pos)
+    public long getId(int pos)
     {
         return events.get(pos).getUniqueID();
     }

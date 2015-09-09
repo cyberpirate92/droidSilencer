@@ -30,6 +30,7 @@ public class NewEvent extends ActionBarActivity {
     EditText etFromDate,etToDate,etFromTime,etToTime,etDescription;
     TextView[] repeatDays;
     private final int HIGHLIGHT_COLOR = Color.parseColor("#ff181818");
+    private boolean isUpdate;   // a flag to check whether this is an update event or new event operation
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +80,7 @@ public class NewEvent extends ActionBarActivity {
         }
 
         if(this.getIntent().hasExtra("ID")) {
-            final long ID = getIntent().getLongExtra("d",-1);
+            final long ID = getIntent().getLongExtra("ID",-1);
             if(ID != -1) {
                 setFields(ID);
             }
@@ -99,9 +100,12 @@ public class NewEvent extends ActionBarActivity {
             etToDate.setText(this.getDateString(to));
             etFromTime.setText(this.getTimeString(from));
             etToTime.setText(this.getTimeString(to));
+            etDescription.setText(description);
 
             Button b = (Button) findViewById(R.id.button);
-            b.setText("SAVE CHANGES");
+            b.setText("UPDATE");
+
+            isUpdate = true;
         }
         else {
             Log.d("Silencer-NewEvent", "ERROR: Invalid ID found in intent, Cannot edit event with ID:"+ID);
@@ -169,35 +173,36 @@ public class NewEvent extends ActionBarActivity {
 
     public void onSaveClick(View view)
     {
-        String fromDate,toDate,fromTime,toTime;
+        if(!isUpdate) {
+            String fromDate, toDate, fromTime, toTime;
 
-        fromDate = etFromDate.getText().toString();
-        toDate = etToDate.getText().toString();
-        fromTime = etFromTime.getText().toString();
-        toTime = etToTime.getText().toString();
+            fromDate = etFromDate.getText().toString();
+            toDate = etToDate.getText().toString();
+            fromTime = etFromTime.getText().toString();
+            toTime = etToTime.getText().toString();
 
-        if(fromDate.isEmpty()){
-            etFromDate.setBackgroundColor(Color.RED);
-        }
-        else if(toDate.isEmpty()){
-            etToTime.setBackgroundColor(Color.RED);
-        }
-        else if(fromTime.isEmpty()){
-            etFromTime.setBackgroundColor(Color.RED);
-        }
-        else if(toTime.isEmpty()){
-            etToTime.setBackgroundColor(Color.RED);
+            if (fromDate.isEmpty()) {
+                etFromDate.setBackgroundColor(Color.RED);
+            } else if (toDate.isEmpty()) {
+                etToTime.setBackgroundColor(Color.RED);
+            } else if (fromTime.isEmpty()) {
+                etFromTime.setBackgroundColor(Color.RED);
+            } else if (toTime.isEmpty()) {
+                etToTime.setBackgroundColor(Color.RED);
+            } else {
+
+                Calendar from, to;
+                from = Calendar.getInstance();
+                to = Calendar.getInstance();
+                from = getCalendar(fromDate, fromTime);
+                to = getCalendar(toDate, toTime);
+                MasterDB db = new MasterDB(NewEvent.this);
+                db.insert(from, to, etDescription.getText().toString());
+                goBack();
+            }
         }
         else {
-
-            Calendar from, to;
-            from = Calendar.getInstance();
-            to = Calendar.getInstance();
-            from = getCalendar(fromDate, fromTime);
-            to = getCalendar(toDate,toTime);
-            MasterDB db = new MasterDB(NewEvent.this);
-            db.insert(from,to,etDescription.getText().toString());
-            goBack();
+            // TODO: Code for updating an already existing event.
         }
     }
 

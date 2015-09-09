@@ -167,12 +167,12 @@ public class MasterDB
         }
     }
 
-    public boolean delete(int id) {
+    public boolean delete(long id) {
         String sql = "SELECT "+COL_ALARM_ID+" FROM "+table_name+" WHERE "+COL_ID+" = "+id;
         Cursor cursor = database.rawQuery(sql,null);
         if(cursor.getCount() > 0) {
             cursor.moveToFirst();
-            int startID = id, endID = cursor.getInt(cursor.getColumnIndex(COL_ALARM_ID));
+            int startID = (int)id, endID = cursor.getInt(cursor.getColumnIndex(COL_ALARM_ID));
             if (database.delete(table_name, COL_ID + "=" + id, null) > 0) {
 
                 AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
