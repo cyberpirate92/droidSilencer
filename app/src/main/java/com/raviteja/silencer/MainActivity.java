@@ -28,7 +28,7 @@ public class MainActivity extends ActionBarActivity {
         adapter = new EventListAdapter(this,db.getAllEvents());
         silenceList.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-        this.getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#6D4939")));
+        this.getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(R.string.ActionBarColor)));
         silenceList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {

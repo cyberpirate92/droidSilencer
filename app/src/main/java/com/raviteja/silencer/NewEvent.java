@@ -1,7 +1,9 @@
 package com.raviteja.silencer;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -174,21 +176,25 @@ public class NewEvent extends ActionBarActivity {
     public void onSaveClick(View view)
     {
         if(!isUpdate) {
-            String fromDate, toDate, fromTime, toTime;
+            String fromDate, toDate, fromTime, toTime, description;
 
             fromDate = etFromDate.getText().toString();
             toDate = etToDate.getText().toString();
             fromTime = etFromTime.getText().toString();
             toTime = etToTime.getText().toString();
+            description = etDescription.getText().toString().trim();
 
             if (fromDate.isEmpty()) {
-                etFromDate.setBackgroundColor(Color.RED);
+                etFromDate.setBackgroundColor(Color.argb(122,255,0,0));
             } else if (toDate.isEmpty()) {
-                etToTime.setBackgroundColor(Color.RED);
+                etToTime.setBackgroundColor(Color.argb(122,255,0,0));
             } else if (fromTime.isEmpty()) {
-                etFromTime.setBackgroundColor(Color.RED);
+                etFromTime.setBackgroundColor(Color.argb(122,255,0,0));
             } else if (toTime.isEmpty()) {
-                etToTime.setBackgroundColor(Color.RED);
+                etToTime.setBackgroundColor(Color.argb(122,255,0,0));
+            }
+            else if(description.isEmpty()){
+                etDescription.setBackgroundColor(Color.argb(122,255,0,0));
             } else {
 
                 Calendar from, to;
@@ -196,6 +202,21 @@ public class NewEvent extends ActionBarActivity {
                 to = Calendar.getInstance();
                 from = getCalendar(fromDate, fromTime);
                 to = getCalendar(toDate, toTime);
+                if(from.getTimeInMillis() >= to.getTimeInMillis() ){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(NewEvent.this)
+                            .setTitle("Error")
+                            .setIcon(R.mipmap.ic_launcher)
+                            .setMessage("End time must be greater than start time.")
+                            .setPositiveButton("Ok",new DialogInterface.OnClickListener(){
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    etFromTime.setBackgroundColor(Color.argb(122,255,0,0));
+                                    etToTime.setBackgroundColor(Color.argb(122, 255, 0, 0));
+                                }
+                            });
+                    builder.show();
+                    return;
+                }
                 MasterDB db = new MasterDB(NewEvent.this);
                 db.insert(from, to, etDescription.getText().toString());
                 goBack();

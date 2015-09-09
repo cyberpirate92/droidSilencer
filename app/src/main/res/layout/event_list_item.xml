@@ -9,9 +9,9 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Large Text"
         android:padding="2.5dp"
-        android:textSize="25sp"
+        android:textSize="23sp"
         android:id="@+id/tvDescription"
-        android:textColor="#6D4939"/>
+        android:textColor="#ff371b1b"/>
 
     <LinearLayout
         android:orientation="horizontal"
