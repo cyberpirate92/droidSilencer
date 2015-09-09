@@ -219,6 +219,40 @@ class MasterDB
         return false;
     }
 
+    public int getAlarmId(long ID) {
+        Cursor cursor = database.rawQuery("SELECT " + COL_ALARM_ID + " FROM " + table_name + " WHERE " + COL_ID + " = " + ID, null);
+        if(cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            return cursor.getInt(cursor.getColumnIndex(COL_ALARM_ID));
+        }
+        return -1;
+    }
+
+    public boolean updateRow(long ID, SilenceEvent event) {
+        SilenceEvent current = this.getSilenceEventById(ID);
+        if(current.strictlyEquals(event)) {
+            Log.d("Silencer-MasterDB","Nothing new to update");
+            return true;
+        }
+        else {
+            int alarmID = getAlarmId(ID);
+            if(alarmID!=-1) {
+                ContentValues values = new ContentValues();
+                values.put(COL_FROM, event.getSilenceFrom().getTimeInMillis());
+                values.put(COL_TO, event.getSilenceTo().getTimeInMillis());
+                values.put(COL_DESCRIPTION, event.getDescription());
+                values.put(COL_ALARM_ID, alarmID);
+                if(database.update(table_name,values,COL_ID+"="+ID,null) > 0) {
+                    return true;
+                }
+            }
+            else {
+                Log.d("Silencer-MasterDB","ERROR: Alarm ID cannot be retrieved for ID: "+ID);
+            }
+        }
+        return false;
+    }
+
     public Cursor getAllEvents(){
         return database.rawQuery("SELECT * FROM "+table_name,null);
     }

@@ -33,13 +33,15 @@ public class NewEvent extends ActionBarActivity {
     private TextView[] repeatDays;
     private final int HIGHLIGHT_COLOR = Color.parseColor("#ff181818");
     private boolean isUpdate;   // a flag to check whether this is an update event or new event operation
+    private boolean isEdited;   // a flag to check if any changes were made (for save dialog)
+    private long updateID;      // if isUpdate, ID of the row to be updated.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_event);
 
-        this.getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#6D4939")));
+        this.getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(getResources().getString(R.string.ActionBarColor))));
         this.repeatDays= new TextView[7];
         repeatDays[0] = (TextView) findViewById(R.id.textView);
         repeatDays[1] = (TextView) findViewById(R.id.textView2);
@@ -84,14 +86,15 @@ public class NewEvent extends ActionBarActivity {
         if(this.getIntent().hasExtra("ID")) {
             final long ID = getIntent().getLongExtra("ID",-1);
             if(ID != -1) {
-                setFields(ID);
+                this.updateID = ID;
+                setFields();
             }
         }
     }
 
-    public void setFields(long ID)
+    public void setFields()
     {
-        SilenceEvent event = (new MasterDB(NewEvent.this)).getSilenceEventById(ID);
+        SilenceEvent event = (new MasterDB(NewEvent.this)).getSilenceEventById(updateID);
         if(event!=null) {
             Calendar from = event.getSilenceFrom();
             Calendar to = event.getSilenceTo();
@@ -110,7 +113,7 @@ public class NewEvent extends ActionBarActivity {
             isUpdate = true;
         }
         else {
-            Log.d("Silencer-NewEvent", "ERROR: Invalid ID found in intent, Cannot edit event with ID:"+ID);
+            Log.d("Silencer-NewEvent", "ERROR: Invalid ID found in intent, Cannot edit event with ID:"+updateID);
         }
     }
 
@@ -175,56 +178,67 @@ public class NewEvent extends ActionBarActivity {
 
     public void onSaveClick(View view)
     {
-        if(!isUpdate) {
-            String fromDate, toDate, fromTime, toTime, description;
+        saveOrUpdate();
+    }
 
-            fromDate = etFromDate.getText().toString();
-            toDate = etToDate.getText().toString();
-            fromTime = etFromTime.getText().toString();
-            toTime = etToTime.getText().toString();
-            description = etDescription.getText().toString().trim();
+    private void saveOrUpdate() {
+        String fromDate, toDate, fromTime, toTime, description;
 
-            if (fromDate.isEmpty()) {
-                etFromDate.setBackgroundColor(Color.argb(122,255,0,0));
-            } else if (toDate.isEmpty()) {
-                etToTime.setBackgroundColor(Color.argb(122,255,0,0));
-            } else if (fromTime.isEmpty()) {
-                etFromTime.setBackgroundColor(Color.argb(122,255,0,0));
-            } else if (toTime.isEmpty()) {
-                etToTime.setBackgroundColor(Color.argb(122,255,0,0));
-            }
-            else if(description.isEmpty()){
-                etDescription.setBackgroundColor(Color.argb(122,255,0,0));
-            } else {
+        fromDate = etFromDate.getText().toString();
+        toDate = etToDate.getText().toString();
+        fromTime = etFromTime.getText().toString();
+        toTime = etToTime.getText().toString();
+        description = etDescription.getText().toString().trim();
 
-                Calendar from, to;
-                from = Calendar.getInstance();
-                to = Calendar.getInstance();
-                from = getCalendar(fromDate, fromTime);
-                to = getCalendar(toDate, toTime);
-                if(from.getTimeInMillis() >= to.getTimeInMillis() ){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(NewEvent.this)
-                            .setTitle("Error")
-                            .setIcon(R.mipmap.ic_launcher)
-                            .setMessage("End time must be greater than start time.")
-                            .setPositiveButton("Ok",new DialogInterface.OnClickListener(){
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    etFromTime.setBackgroundColor(Color.argb(122,255,0,0));
-                                    etToTime.setBackgroundColor(Color.argb(122, 255, 0, 0));
-                                }
-                            });
-                    builder.show();
-                    return;
-                }
-                MasterDB db = new MasterDB(NewEvent.this);
-                db.insert(from, to, etDescription.getText().toString());
-                goBack();
-            }
+        if (fromDate.isEmpty()) {
+            etFromDate.setBackgroundColor(Color.argb(122,255,0,0));
+        } else if (toDate.isEmpty()) {
+            etToTime.setBackgroundColor(Color.argb(122,255,0,0));
+        } else if (fromTime.isEmpty()) {
+            etFromTime.setBackgroundColor(Color.argb(122,255,0,0));
+        } else if (toTime.isEmpty()) {
+            etToTime.setBackgroundColor(Color.argb(122,255,0,0));
+        }
+        else if(description.isEmpty()){
+            etDescription.setBackgroundColor(Color.argb(122,255,0,0));
         }
         else {
-            // TODO: Code for updating an already existing event.
-
+            Calendar from, to;
+            from = Calendar.getInstance();
+            to = Calendar.getInstance();
+            from = getCalendar(fromDate, fromTime);
+            to = getCalendar(toDate, toTime);
+            if (from.getTimeInMillis() >= to.getTimeInMillis()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(NewEvent.this)
+                        .setTitle("Error")
+                        .setIcon(R.mipmap.ic_launcher)
+                        .setMessage("End time must be greater than start time.")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                etFromTime.setBackgroundColor(Color.argb(122, 255, 0, 0));
+                                etToTime.setBackgroundColor(Color.argb(122, 255, 0, 0));
+                            }
+                        });
+                builder.show();
+                return;
+            }
+            MasterDB db = new MasterDB(NewEvent.this);
+            if (!isUpdate) {
+                db.insert(from, to, etDescription.getText().toString());
+            }
+            else {
+                SilenceEvent event = new SilenceEvent(from, to, description);
+                if (this.updateID != -1) {
+                    if (db.updateRow(updateID, event)) {
+                        Log.d("Silencer-UpdateEvent", "Successfully updated row with ID: " + updateID);
+                    }
+                }
+                else {
+                    Log.d("Silencer-UpdateEvent", "updateID returned -1, Unable to update row with ID: " + updateID);
+                }
+            }
+            goBack();
         }
     }
 
@@ -310,5 +324,11 @@ public class NewEvent extends ActionBarActivity {
     public void displayToast(String msg)
     {
         Toast.makeText(this,msg,Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        super.onBackPressed();
     }
 }

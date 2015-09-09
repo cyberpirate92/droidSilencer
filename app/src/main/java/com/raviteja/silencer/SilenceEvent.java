@@ -104,4 +104,18 @@ public class SilenceEvent {
         else
             return month + "";
     }
+    public boolean equals(SilenceEvent event) {
+        if(this.silenceFrom.getTimeInMillis() == event.getSilenceFrom().getTimeInMillis()) {
+            if(this.silenceTo.getTimeInMillis() == event.getSilenceTo().getTimeInMillis()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean strictlyEquals(SilenceEvent event) {
+        if(this.equals(event)) {
+            return this.description.equals(event.getDescription());
+        }
+        return false;
+    }
 }
