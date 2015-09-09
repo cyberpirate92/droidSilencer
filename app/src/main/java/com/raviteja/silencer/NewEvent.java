@@ -27,8 +27,8 @@ import java.util.Calendar;
 
 public class NewEvent extends ActionBarActivity {
 
-    EditText etFromDate,etToDate,etFromTime,etToTime,etDescription;
-    TextView[] repeatDays;
+    private EditText etFromDate,etToDate,etFromTime,etToTime,etDescription;
+    private TextView[] repeatDays;
     private final int HIGHLIGHT_COLOR = Color.parseColor("#ff181818");
     private boolean isUpdate;   // a flag to check whether this is an update event or new event operation
 
@@ -243,7 +243,6 @@ public class NewEvent extends ActionBarActivity {
             final EditText target = (EditText) view;
             int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
             final int min = Calendar.getInstance().get(Calendar.MINUTE);
-            int sec = Calendar.getInstance().get(Calendar.SECOND);
             TimePickerDialog timePicker = new TimePickerDialog(NewEvent.this, new TimePickerDialog.OnTimeSetListener()
             {
                 @Override

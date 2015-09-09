@@ -5,18 +5,21 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Vibrator;
-import android.provider.MediaStore;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
+
+import java.util.Calendar;
 
 /**
  * Created by raviteja on 06-09-2015.
  */
 public class AlarmReceiver extends BroadcastReceiver {
-    Context context;
-    SilenceEvent event;
+    private Context context;
+    private SilenceEvent event;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -38,12 +41,9 @@ public class AlarmReceiver extends BroadcastReceiver {
                 this.event = db.getSilenceEventById(ID);
                 db.close(); // for efficiency
                 msg = this.event.getDescription();
-                Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-                NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
                 Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
                 vibrator.vibrate(250);
-                displayNotification(this.event.getDateString(),this.event.getTimeString());
-                silencePhone();
+                silencePhone(ID);
             }
             else {
                 Log.d("Silencer-Broadcast","Alarm with Title '"+msg+"' has been canceled the inefficient way :( :( ");
@@ -51,55 +51,46 @@ public class AlarmReceiver extends BroadcastReceiver {
             db.close();
         }
     }
-    private void silencePhone()
-    {
-        /** TODO: this method is currently in toggle mode, have to change it
-             if(currentTime falls between startTime and endTime of event) {
-              if(phone is NOT in SILENT_MODE){
-                    set phone to silent.
-                }
-            }
-            else{
-                if(phone is in SILENT_MODE ){
-                    set phone to normal mode.
-                }
-            }
-        **/
+    private void silencePhone(long ID) {
+        if(this.event != null) {
+            Calendar toDate = this.event.getSilenceTo();
+            AudioManager manager = (AudioManager) this.context.getSystemService(Context.AUDIO_SERVICE);
 
-        AudioManager manager = (AudioManager) this.context.getSystemService(Context.AUDIO_SERVICE);
-        if(manager.getRingerMode() == AudioManager.RINGER_MODE_SILENT) {
-            manager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-            Log.d("Silencer-Volume","Phone is currently in silent mode, restoring to normal mode..");
-            if(manager.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
-                Log.d("Silencer-Volume","Phone is set to normal mode.");
-            }
-            else{
-                Log.d("Silencer-Volume","Unable to set phone in normal mode.");
-            }
-        }
-        else {
-            manager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-            Log.d("Silencer-Volume", "Phone is currently in normal mode, restoring to silent mode..");
-            if(manager.getRingerMode() == AudioManager.RINGER_MODE_SILENT){
-                Log.d("Silencer-Volume","Phone is set to silent mode now.");
+            if (System.currentTimeMillis() < toDate.getTimeInMillis()) {
+                if (manager.getRingerMode() != AudioManager.RINGER_MODE_SILENT) {
+                    manager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+                    displayNotification(ID);
+                }
             }
             else {
-                Log.d("Silencer-Volume","Unble to set phone in silent mode.");
+                if (manager.getRingerMode() == AudioManager.RINGER_MODE_SILENT) {
+                    manager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                    dismissNotification(ID);
+                }
             }
         }
-
+        else{
+            Log.d("Silencer-Volume", "ERROR: Event details null, unable to modify AudioManager!!");
+        }
     }
 
-    private void displayNotification(String dateString,String timeString)
-    {
+    private void dismissNotification(long ID){
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification.Builder builder = new Notification.Builder(context);
-        builder.setContentTitle("Silencer");
-        builder.setContentText("Date : "+dateString+" \nTime : "+timeString);
-        builder.setAutoCancel(false);
+        manager.cancel((int)ID);
+    }
 
-        Notification notification = builder.getNotification();
-        manager.notify(12,notification);
-        //manager.notify(12,builder.build());
+    private void displayNotification(long uniqueID)
+    {
+        String timeString = this.event.getSilenceTo().get(Calendar.HOUR_OF_DAY)+":"+this.event.getSilenceTo().get(Calendar.MINUTE);
+        String notifDisplay  = "Phone has been silenced till " + timeString+", Event : "+this.event.getDescription();
+        NotificationCompat.Builder nBuilder = new NotificationCompat.Builder(this.context)
+                .setTicker(notifDisplay)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("Silencer")
+                .setContentText(notifDisplay);
+
+        Notification notification = nBuilder.build();
+        NotificationManager nManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        nManager.notify((int)uniqueID,notification);
     }
 }

@@ -16,7 +16,7 @@ import android.util.Log;
 /**
  * Created by raviteja on 02-09-2015.
  */
-public class MasterDB
+class MasterDB
 {
     static String db_name = "silencer.db";
     static String table_name = "silence_events";
@@ -27,9 +27,9 @@ public class MasterDB
     static String COL_ALARM_ID = "_alarmID";
     static int version = 1;
 
-    SQLiteDatabase database;
-    Helper helper;
-    Context context;
+    private SQLiteDatabase database;
+    private Helper helper;
+    private Context context;
 
     class Helper extends SQLiteOpenHelper
     {
@@ -123,6 +123,9 @@ public class MasterDB
             Log.d("Silencer-MasterDB","ERROR: getLastId() => "+e);
             return 0;
         }
+        finally {
+            result.close();
+        }
     }
 
     public int getUniqueRandom() {
@@ -157,9 +160,9 @@ public class MasterDB
         if(cursor.getCount() > 0) {
             cursor.moveToFirst();
             Calendar from = Calendar.getInstance(),to = Calendar.getInstance();
-            String description = cursor.getString(cursor.getColumnIndex(this.COL_DESCRIPTION));
-            from.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(this.COL_FROM)));
-            to.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(this.COL_TO)));
+            String description = cursor.getString(cursor.getColumnIndex(MasterDB.COL_DESCRIPTION));
+            from.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(MasterDB.COL_FROM)));
+            to.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(MasterDB.COL_TO)));
             return new SilenceEvent(from,to,description);
         }
         else {
@@ -173,6 +176,7 @@ public class MasterDB
         if(cursor.getCount() > 0) {
             cursor.moveToFirst();
             int startID = (int)id, endID = cursor.getInt(cursor.getColumnIndex(COL_ALARM_ID));
+
             if (database.delete(table_name, COL_ID + "=" + id, null) > 0) {
 
                 AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);

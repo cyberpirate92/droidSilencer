@@ -3,9 +3,9 @@ package com.raviteja.silencer;
 /**
  * Created by raviteja on 03-09-2015.
  */
-public class Time
+class Time
 {
-    int hours,minutes;
+    private int hours,minutes;
     public Time(String time)
     {
         String parts[] = time.split(time);

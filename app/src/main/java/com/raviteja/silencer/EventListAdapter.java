@@ -15,11 +15,11 @@ import java.util.Calendar;
 /**
  * Created by raviteja on 02-09-2015.
  */
-public class EventListAdapter extends CursorAdapter
+class EventListAdapter extends CursorAdapter
 {
 
-    Context context;
-    ArrayList<SilenceEvent> events;
+    private Context context;
+    private ArrayList<SilenceEvent> events;
     private Typeface typeface_medium,typeface_bold;
 
     public EventListAdapter(Context ctx,Cursor cursor)
