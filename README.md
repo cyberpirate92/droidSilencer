@@ -1,2 +1,2 @@
-# Silencer
-An android app to set up your schedule for silencing your phone automatically.
+## Silencer
+Tired of manually Silencing your android during every meeting, class etc, then Silencer is the solution for you.
