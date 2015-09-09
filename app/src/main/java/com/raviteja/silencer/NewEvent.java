@@ -3,15 +3,16 @@ package com.raviteja.silencer;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
@@ -88,11 +89,23 @@ public class NewEvent extends ActionBarActivity {
     public void setFields(long ID)
     {
         SilenceEvent event = (new MasterDB(NewEvent.this)).getSilenceEventById(ID);
-        Calendar from = event.getSilenceFrom();
-        Calendar to = event.getSilenceTo();
-        String description = event.getDescription();
+        if(event!=null) {
+            Calendar from = event.getSilenceFrom();
+            Calendar to = event.getSilenceTo();
+            String description = event.getDescription();
 
-        // TODO:set the fields here, for opening activity via intent
+            // TODO:set the fields here, for opening activity via intent
+            etFromDate.setText(this.getDateString(from));
+            etToDate.setText(this.getDateString(to));
+            etFromTime.setText(this.getTimeString(from));
+            etToTime.setText(this.getTimeString(to));
+
+            Button b = (Button) findViewById(R.id.button);
+            b.setText("SAVE CHANGES");
+        }
+        else {
+            Log.d("Silencer-NewEvent", "ERROR: Invalid ID found in intent, Cannot edit event with ID:"+ID);
+        }
     }
 
     public void setMediumFont(View view)
@@ -207,6 +220,14 @@ public class NewEvent extends ActionBarActivity {
             c.set(year,month,day,hour,minute,0);
             return c;
         }
+    }
+
+    private String getDateString(Calendar calendar) {
+        return calendar.get(Calendar.DAY_OF_MONTH)+"-"+calendar.get(Calendar.MONTH)+"-"+calendar.get(Calendar.YEAR);
+    }
+
+    private String getTimeString(Calendar calendar) {
+        return calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE);
     }
 
     public void onTimeFieldClick(View view)
