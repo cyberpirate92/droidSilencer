@@ -86,7 +86,7 @@ public class SilenceEvent {
         h2 = silenceTo.get(Calendar.HOUR_OF_DAY);
         m1 = silenceFrom.get(Calendar.MINUTE);
         m2 = silenceTo.get(Calendar.MINUTE);
-        return format(h1) + " : "+format(m1) + " - " + format(h2) + " : "+ format(m2);
+        return format(h1) + ":"+format(m1) + " - " + format(h2) + ":"+ format(m2);
     }
 
     public static String format(int n) // returns a 0-padded string representation of a number

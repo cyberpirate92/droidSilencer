@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    android:background="#03FFFFFF">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Large Text"
         android:padding="2.5dp"
-        android:textSize="23sp"
+        android:paddingLeft="0.5dp"
+        android:textSize="20sp"
         android:id="@+id/tvDescription"
-        android:textColor="#ff371b1b"/>
+        android:textColor="#000000"/>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:weightSum="10">
+        android:weightSum="10"
+        android:paddingBottom="7dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -25,23 +27,25 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="12 Jan 2015"
             android:textAlignment="textEnd"
-            android:textSize="20sp"
+            android:textSize="17sp"
             android:layout_gravity="end"
-            android:textColor="#EFCDA7"
+            android:textColor="#ff16372d"
             android:layout_weight="9"
             android:id="@+id/tvDate"
-            android:padding="3dp"/>
+            android:padding="3dp"
+            android:paddingLeft="0.5dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="07:00 AM to 09:00 AM"
-            android:textSize="20sp"
+            android:textSize="15sp"
             android:layout_weight="1"
-            android:textColor="#EFCDA7"
+            android:textColor="#ff713f56"
             android:id="@+id/tvTimeRange"
-            android:padding="3dp"/>
+            android:padding="3dp"
+            android:paddingLeft="0.5dp"/>
 
     </LinearLayout>
 </LinearLayout>

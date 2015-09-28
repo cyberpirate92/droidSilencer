@@ -80,16 +80,8 @@ class MasterDB
         Intent startIntent = new Intent(context.getApplicationContext(), AlarmReceiver.class);
         Intent endIntent = new Intent(context.getApplicationContext(),AlarmReceiver.class);
 
-        String fromString,toString;
-        fromString = SilenceEvent.format(fromTime.get(Calendar.HOUR_OF_DAY))+":"+SilenceEvent.format(fromTime.get(Calendar.MINUTE));
-        toString = SilenceEvent.format(toTime.get(Calendar.HOUR_OF_DAY))+":"+SilenceEvent.format(toTime.get(Calendar.MINUTE));
-
-        startIntent.putExtra("description", description);
-        endIntent.putExtra("description", description);
         startIntent.putExtra("id", lastID);
         endIntent.putExtra("id", lastID);
-        startIntent.putExtra("startTime", fromString);
-        startIntent.putExtra("endTime", toString);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context,startID,startIntent,0);

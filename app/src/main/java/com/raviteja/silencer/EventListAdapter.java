@@ -2,11 +2,13 @@ package com.raviteja.silencer;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -27,8 +29,8 @@ class EventListAdapter extends CursorAdapter
         super(ctx,cursor,true);
         context = ctx;
         this.events = new ArrayList<SilenceEvent>();
-        typeface_medium = Typeface.createFromAsset(ctx.getAssets(), "fonts/KlinicSlabMedium.otf");
-        typeface_bold = Typeface.createFromAsset(ctx.getAssets(), "fonts/KlinicSlabBold.otf");
+        typeface_medium = Typeface.createFromAsset(ctx.getAssets(), "fonts/CalendasPlus.otf");
+        typeface_bold = Typeface.createFromAsset(ctx.getAssets(), "fonts/Haymaker.ttf");
     }
 
     public void clear()
@@ -68,9 +70,9 @@ class EventListAdapter extends CursorAdapter
         tvDate.setText(event.getDateString());
         tvTime.setText(event.getTimeString());
 
-        tvDes.setTypeface(typeface_bold);
+        tvDes.setTypeface(typeface_medium);
         tvDate.setTypeface(typeface_medium);
-        tvTime.setTypeface(typeface_medium);
+        tvTime.setTypeface(typeface_bold);
     }
 
     public long getId(int pos)
